@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   // if "next" is in param, use it as the redirect URL
-  const next = searchParams.get('next') ?? '/'
+  const next = searchParams.get('next') ?? '/dashboard' // Set default to /dashboard
 
   if (code) {
     const cookieStore = cookies()
@@ -31,8 +31,8 @@ export async function GET(request: Request) {
     )
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      // After successful login, redirect to the dashboard
-      return NextResponse.redirect(`${origin}/dashboard`)
+      // THE FIX IS HERE: We now redirect to the 'next' variable.
+      return NextResponse.redirect(`${origin}${next}`)
     }
   }
 

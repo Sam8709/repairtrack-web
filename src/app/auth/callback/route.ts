@@ -1,4 +1,5 @@
-// Final version - 17th June
+// src/app/auth/callback/route.ts
+
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
@@ -6,8 +7,6 @@ import { NextResponse } from 'next/server'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  // if "next" is in param, use it as the redirect URL
-  const next = searchParams.get('next') ?? '/dashboard' // Set default to /dashboard
 
   if (code) {
     const cookieStore = cookies()
@@ -30,10 +29,12 @@ export async function GET(request: Request) {
     )
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(`<span class="math-inline">\{origin\}</span>{next}`)
+      // THE FIX: We now declare 'next' only inside the success path where it's used.
+      const next = searchParams.get('next') ?? '/dashboard'
+      return NextResponse.redirect(`${origin}${next}`)
     }
   }
 
-  // return the user to an error page with instructions
+  // If there is no code or an error, redirect to an error page
   return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }

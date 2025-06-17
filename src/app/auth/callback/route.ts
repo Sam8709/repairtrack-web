@@ -1,5 +1,4 @@
-// src/app/auth/callback/route.ts
-
+// Final version - 17th June
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
@@ -31,8 +30,7 @@ export async function GET(request: Request) {
     )
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      // THE FIX IS HERE: We now redirect to the 'next' variable.
-      return NextResponse.redirect(`${origin}${next}`)
+      return NextResponse.redirect(`<span class="math-inline">\{origin\}</span>{next}`)
     }
   }
 
